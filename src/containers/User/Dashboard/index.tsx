@@ -11,12 +11,13 @@ const DashboardContainer = () => {
     if (!user) {
       Router.push('/login');
     } else {
-      const parsedUser = JSON.parse(user);
-      if (Array.isArray(parsedUser)) {
-        setUser(parsedUser[0] || {});
-      } else {
-        setUser({});
-      }
+      // const parsedUser = JSON.parse(user);
+      // if (Array.isArray(parsedUser)) {
+      //   setUser(parsedUser[0] || {});
+      // } else {
+      //   setUser({});
+      // }
+      setUser({ name: 'test name', number: '989898989' });
     }
   }, []);
 
