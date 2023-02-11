@@ -11,7 +11,7 @@ const DashboardContainer = () => {
     if (!user) {
       Router.push('/login');
     } else {
-      const parsedUser = JSON.parse(user);
+      const parsedUser = JSON.parse(user) || [{}];
       setUser((parsedUser && parsedUser[0]) || {});
     }
   }, []);
