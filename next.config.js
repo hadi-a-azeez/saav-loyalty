@@ -7,6 +7,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  prerenderPages: false,
   reactStrictMode: true,
   swcMinify: true,
 
