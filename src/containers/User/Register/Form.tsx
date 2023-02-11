@@ -1,4 +1,10 @@
-import { Button, FormControl, FormLabel, Input } from '@chakra-ui/react';
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Input,
+} from '@chakra-ui/react';
 import Router from 'next/router';
 import { useState } from 'react';
 
@@ -11,6 +17,7 @@ interface FormValues {
 const Form = () => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ number: '', name: '' });
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -26,27 +33,36 @@ const Form = () => {
   const handleRegisterClick = async () => {
     try {
       setLoading(true);
+      const validationErrors = validateForm(
+        formValues?.number,
+        formValues?.name
+      );
+      setErrors(validationErrors);
+      if (validationErrors.number || validationErrors.name) {
+        throw 'validation error';
+      }
       const { data, error } = await supabase
         .from('kardano-users')
-        .insert({ ...formValues, number: parseInt(formValues.number) });
-      // const result = await supabase.auth.signUp({
-      //   phone: '+971554756473',
-      //   password: 'some-password',
-      // });
-      // console.log(result);
-      // if (data) {
-      //   const result = await supabase.auth.signUp({
-      //     phone: '+13334445555',
-      //     password: 'some-password',
-      //   });
-      //   console.log(result);
-      // }
+        .insert({ ...formValues, number: parseInt(formValues.number) })
+        .select();
+      localStorage.setItem('user', JSON.stringify(data));
+      Router.push('/dashboard');
     } catch (error) {
       console.log('error', error);
     } finally {
       setLoading(false);
-      Router.push('/dashboard');
     }
+  };
+
+  const validateForm = (number: string, name: string) => {
+    const errors: { number: string; name: string } = { number: '', name: '' };
+    if (!number) {
+      errors.number = 'Number is required';
+    }
+    if (!name) {
+      errors.name = 'Name is required';
+    }
+    return errors;
   };
 
   return (
@@ -63,6 +79,9 @@ const Form = () => {
             setFormValues(handleInputChange(event, formValues))
           }
         />
+        {errors.name && (
+          <FormHelperText color='red.400'>Please enter name</FormHelperText>
+        )}
       </FormControl>
       <FormControl isRequired>
         <FormLabel>Whatsapp Number</FormLabel>
@@ -76,6 +95,11 @@ const Form = () => {
             setFormValues(handleInputChange(event, formValues))
           }
         />
+        {errors.number && (
+          <FormHelperText color='red.400'>
+            Please enter whatsapp number
+          </FormHelperText>
+        )}
       </FormControl>
       <FormControl>
         <FormLabel>Place</FormLabel>
