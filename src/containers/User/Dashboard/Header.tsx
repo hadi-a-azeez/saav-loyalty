@@ -1,6 +1,6 @@
 import Router from 'next/router';
 
-const Header = ({ user = {} }: any) => {
+const Header = ({ user = { name: 'test' } }: any) => {
   const onLogout = () => {
     localStorage.removeItem('user');
     Router.push('/login');
@@ -18,7 +18,7 @@ const Header = ({ user = {} }: any) => {
       </div>
       <div className='flex flex-row gap-3'>
         <div className='grid h-[60px] w-[60px] place-items-center rounded-[50%] bg-white p-4 text-xl font-semibold'>
-          {user?.name[0].toUpperCase()}
+          {user?.name ? user?.name[0].toUpperCase() : ''}
         </div>
         <div className='flex flex-col gap-1'>
           <h1 className='text-lg font-semibold text-white'>{user?.name}</h1>
