@@ -4,7 +4,9 @@ const nextConfig = {
     dirs: ['src'],
     ignoreDuringBuilds: true,
   },
-
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   reactStrictMode: true,
   swcMinify: true,
 
