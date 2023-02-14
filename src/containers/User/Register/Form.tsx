@@ -9,6 +9,7 @@ import Router from 'next/router';
 import { useState } from 'react';
 
 import { supabase } from '@/lib/supabaseClient';
+import { coupons } from '@/lib/constants';
 
 interface FormValues {
   [key: string]: any;
@@ -46,6 +47,18 @@ const Form = () => {
         .insert({ ...formValues, number: parseInt(formValues.number) })
         .select();
       localStorage.setItem('user', JSON.stringify(data));
+      //add a registration coupon to the user in kardano-coupons table, select a random coupon.coupon from the list
+      const couponforuser = coupons[Math.floor(Math.random() * coupons.length)];
+      const { data: couponData, error: couponError } = await supabase
+        .from('kardano-coupons')
+        .insert({
+          user_id: data && data[0].id,
+          coupon: couponforuser.coupon,
+          campaign: 'REGISTRATION',
+          coupon_description: couponforuser.description,
+          status: 'ACTIVE',
+        });
+      sendTxtMessage();
       Router.push('/dashboard');
     } catch (error) {
       console.log('error', error);
@@ -54,10 +67,26 @@ const Form = () => {
     }
   };
 
+  const sendTxtMessage = async () => {
+    let message = `Hi ${formValues?.name}, Thank you for registering with Kardano clothing. Login to your account to avail your registration coupon using your mobile number. https://kardano.netlify.app/login`;
+    let heroku = 'https://abony-backend.herokuapp.com';
+    fetch(
+      `${heroku}/send-text/?recipient=91${formValues?.number}&textmessage=${message}`
+    )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error(err));
+  };
+
   const validateForm = (number: string, name: string) => {
     const errors: { number: string; name: string } = { number: '', name: '' };
     if (!number) {
       errors.number = 'Number is required';
+    }
+    //phone number validation, only numbers allowed, max 10 digits, min 10 digits
+    if (number && !/^[0-9]{10}$/.test(number)) {
+      errors.number = 'Please enter a valid number';
     }
     if (!name) {
       errors.name = 'Name is required';
@@ -94,6 +123,8 @@ const Form = () => {
           onChange={(event) =>
             setFormValues(handleInputChange(event, formValues))
           }
+          //phone number validation, only numbers allowed, max 10 digits, min 10 digits
+          pattern='[0-9]{10}'
         />
         {errors.number && (
           <FormHelperText color='red.400'>

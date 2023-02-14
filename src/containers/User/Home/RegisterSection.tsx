@@ -2,17 +2,17 @@ import Router from 'next/router';
 
 const RegisterSection = () => {
   return (
-    <div className='mt-4 flex w-full flex-col items-center gap-4 px-5 py-2'>
-      <h1 className='align-middle text-lg font-semibold'>
-        Be a member and get exclusive offers
+    <div className='flex flex-col justify-center gap-4 rounded-lg bg-gray-900 px-6 py-4'>
+      <h1 className='text-center text-2xl font-semibold text-white'>
+        Be a member and get Exclusive Offers
       </h1>
       <button
-        className='w-fit rounded-lg bg-black py-2 px-6 text-lg font-semibold text-white'
+        className='rounded-lg bg-white px-4 py-3 font-bold text-gray-600'
         onClick={() => {
           Router.push('/register');
         }}
       >
-        Register
+        Register Now
       </button>
     </div>
   );

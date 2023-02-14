@@ -1,59 +1,89 @@
-import { useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const ScratchCardSection = () => {
-  const [revealed, setRevealed] = useState(false);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
+interface Props {
+  imageForwardSrc: string;
+  imageBackgroundSrc: string;
+  width: number;
+  height: number;
+  percentToFinish: number;
+  onScratchFinish: () => void;
+}
 
-    overlay.style.background = `linear-gradient(to right, transparent 0%, transparent ${
-      e.clientX - overlay.offsetLeft
-    }px, white ${e.clientX - overlay.offsetLeft}px, white 100%)`;
-  };
+const ScratchCard: React.FC<Props> = ({
+  imageForwardSrc,
+  imageBackgroundSrc,
+  width,
+  height,
+  percentToFinish,
+  onScratchFinish,
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+  const [scratchedPercent, setScratchedPercent] = useState(0);
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-    overlay.style.background = `linear-gradient(to right, transparent 0%, transparent ${
-      e.clientX - overlay.offsetLeft
-    }px, white ${e.clientX - overlay.offsetLeft}px, white 100%)`;
-  };
+  useEffect(() => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
 
-  const handlePointerUp = () => {
-    setRevealed(true);
-  };
+      if (ctx) {
+        setCtx(ctx);
+      }
+    }
+  }, []);
 
-  const Card = () => {
-    return (
-      <div className='relative h-32 w-full overflow-hidden rounded-lg bg-blue-600 shadow-lg'>
-        <div
-          ref={overlayRef}
-          className='absolute top-0 left-0 h-full w-full bg-white'
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        />
-        <div
-          className={`absolute top-0 left-0 flex h-full w-full items-center justify-center text-2xl font-bold text-black ${
-            revealed ? '' : 'invisible'
-          }`}
-        >
-          You won!
-        </div>
-      </div>
-    );
+  useEffect(() => {
+    if (ctx) {
+      const image = new Image();
+      image.src = imageForwardSrc;
+      image.onload = () => {
+        ctx.drawImage(image, 0, 0, width, height);
+      };
+    }
+  }, [ctx, imageForwardSrc, width, height]);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!ctx) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2, false);
+    ctx.fill();
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let total = 0;
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      if (imageData.data[i + 3] === 0) {
+        total++;
+      }
+    }
+    const scratched = (total / (imageData.width * imageData.height)) * 100;
+    setScratchedPercent(scratched);
+
+    if (scratched >= percentToFinish) {
+      onScratchFinish();
+    }
   };
 
   return (
-    <div className='mt-3 flex w-full flex-col gap-2 px-3'>
-      <h1 className='text-xl font-semibold'>Rewards</h1>
-      <div className=' grid w-full grid-cols-2 gap-3 '>
-        <Card />
-        <Card />
-      </div>
-    </div>
+    <canvas
+      ref={canvasRef}
+      width={width}
+      height={height}
+      onMouseMove={handleMouseMove}
+      style={{ backgroundImage: `url(${imageBackgroundSrc})` }}
+    />
   );
 };
 
-export default ScratchCardSection;
+export default ScratchCard;
