@@ -2,7 +2,7 @@ import Router from 'next/router';
 
 const RegisterSection = () => {
   return (
-    <div className='flex flex-col justify-center gap-4 rounded-lg bg-gray-900 px-6 py-4'>
+    <div className='flex w-full flex-col justify-center gap-4 rounded-lg bg-gray-900 px-6 py-4'>
       <h1 className='text-center text-2xl font-semibold text-white'>
         Be a member and get Exclusive Offers
       </h1>

@@ -9,7 +9,12 @@ const Header = ({ user = { name: 'test' } }: any) => {
   return (
     <div className='flex w-full flex-col gap-6 bg-black px-5 py-8'>
       <div className='flex w-full justify-between'>
-        <h1 className='text-lg font-bold italic text-white'>KARDANO</h1>
+        <h1
+          className='text-lg font-bold italic text-white'
+          onClick={() => Router.push('/')}
+        >
+          KARDANO
+        </h1>
         <button
           className='rounded-lg bg-[#242424] px-4 py-1 font-semibold text-white'
           onClick={onLogout}

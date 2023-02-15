@@ -4,12 +4,13 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  useToast,
 } from '@chakra-ui/react';
 import Router from 'next/router';
 import { useState } from 'react';
 
-import { supabase } from '@/lib/supabaseClient';
 import { coupons } from '@/lib/constants';
+import { supabase } from '@/lib/supabaseClient';
 
 interface FormValues {
   [key: string]: any;
@@ -19,6 +20,7 @@ const Form = () => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ number: '', name: '' });
+  const toast = useToast();
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -41,6 +43,21 @@ const Form = () => {
       setErrors(validationErrors);
       if (validationErrors.number || validationErrors.name) {
         throw 'validation error';
+      }
+      //check if user already exists
+      const { data: userData, error: userError } = await supabase
+        .from('kardano-users')
+        .select('*')
+        .eq('number', formValues.number);
+      if (userData && userData.length > 0) {
+        toast({
+          title: 'User already exists',
+          description: 'Please login to your account',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        throw 'user already exists';
       }
       const { data, error } = await supabase
         .from('kardano-users')
@@ -68,11 +85,10 @@ const Form = () => {
   };
 
   const sendTxtMessage = async () => {
-    let message = `Hi ${formValues?.name}, Thank you for registering with Kardano clothing. Login to your account to avail your registration coupon using your mobile number. https://kardano.netlify.app/login`;
-    let heroku = 'https://abony-backend.herokuapp.com';
-    fetch(
-      `${heroku}/send-text/?recipient=91${formValues?.number}&textmessage=${message}`
-    )
+    const message = `Hi hadi, Thank you for registering with Kardano clothing. Login to your account to avail your registration coupon using your mobile number. https://kardano.netlify.app/login`;
+    const heroku = 'https://abony-backend.herokuapp.com';
+    // const local = 'http://localhost:4000';
+    fetch(`${heroku}/send-text/?recipient=917012179326&textmessage=${message}`)
       .then((res) => {
         console.log(res);
       })
@@ -95,7 +111,7 @@ const Form = () => {
   };
 
   return (
-    <div className='flex w-full flex-col gap-4 px-4'>
+    <div className='flex w-full flex-col gap-4 px-4 md:px-20'>
       <FormControl isRequired>
         <FormLabel>Name</FormLabel>
         <Input

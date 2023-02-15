@@ -1,10 +1,10 @@
 import Router from 'next/router';
 import { useEffect, useState } from 'react';
 
+import { supabase } from '@/lib/supabaseClient';
+
 import Header from '@/containers/User/Dashboard/Header';
 import RewardSection from '@/containers/User/Dashboard/RewardSection';
-import ScratchCard from '@/containers/User/Dashboard/ScratchCard';
-import { supabase } from '@/lib/supabaseClient';
 // import { coupons } from '@/lib/constants';
 
 const DashboardContainer = () => {
@@ -33,7 +33,7 @@ const DashboardContainer = () => {
   };
 
   return (
-    <div className='flex min-h-screen flex-col items-center bg-gray-200'>
+    <div className='flex min-h-screen flex-col items-center bg-gray-100'>
       <Header user={user} />
       {/* <MetricsSection /> */}
       {/* <ScratchCardSection /> */}

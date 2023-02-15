@@ -54,7 +54,7 @@ const LoginContainer = () => {
         alt='ss'
         className='h-[270px] w-full object-cover'
       />
-      <div className='flex w-full flex-col gap-4 px-4 pb-10'>
+      <div className='flex w-full flex-col gap-4 px-4 pb-10 md:px-20'>
         <h1 className='mt-4 py-4 text-center text-3xl font-semibold'>
           Exclusive Rewards For Members
         </h1>
