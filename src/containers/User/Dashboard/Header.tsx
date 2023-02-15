@@ -7,16 +7,16 @@ const Header = ({ user = { name: 'test' } }: any) => {
   };
 
   return (
-    <div className='flex w-full flex-col gap-6 bg-black px-5 py-8'>
+    <div className='flex w-full flex-col gap-6 bg-black px-5 py-8 md:px-10'>
       <div className='flex w-full justify-between'>
         <h1
-          className='text-lg font-bold italic text-white'
+          className='text-lg font-bold italic text-white md:text-2xl'
           onClick={() => Router.push('/')}
         >
           KARDANO
         </h1>
         <button
-          className='rounded-lg bg-[#242424] px-4 py-1 font-semibold text-white'
+          className='rounded-lg bg-[#242424] px-4 py-1 font-semibold text-white md:py-3 md:px-6 md:text-lg'
           onClick={onLogout}
         >
           Sign Out
@@ -27,8 +27,10 @@ const Header = ({ user = { name: 'test' } }: any) => {
           {user?.name ? user?.name[0].toUpperCase() : ''}
         </div>
         <div className='flex flex-col gap-1'>
-          <h1 className='text-lg font-semibold text-white'>{user?.name}</h1>
-          <h1 className='text-sm font-normal text-gray-50'>
+          <h1 className='text-lg font-semibold text-white md:text-3xl'>
+            {user?.name}
+          </h1>
+          <h1 className='text-sm font-normal text-gray-50 md:text-lg'>
             +91 {user?.number}
           </h1>
         </div>

@@ -8,8 +8,9 @@ import RewardSection from '@/containers/User/Dashboard/RewardSection';
 // import { coupons } from '@/lib/constants';
 
 const DashboardContainer = () => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<any>({});
   const [coupons, setCoupons] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user) {
@@ -22,14 +23,14 @@ const DashboardContainer = () => {
   }, []);
 
   const fetchUserCoupons = async (userId: string) => {
-    console.log('userId', userId);
+    console.log('fetching coupons for user: ', userId);
+    setIsLoading(true);
     const { data, error } = await supabase
       .from('kardano-coupons')
       .select('*')
       .eq('user_id', userId);
-    console.log('data', data);
-    console.log('error', error);
     setCoupons(data || []);
+    setIsLoading(false);
   };
 
   return (
@@ -47,7 +48,23 @@ const DashboardContainer = () => {
           console.log('Scratch finished');
         }}
       /> */}
-      <RewardSection coupons={coupons} fetchData={fetchUserCoupons} />
+      {/* shimmer  */}
+      {isLoading ? (
+        // skeleton
+        <div className='mt-4 w-full px-3 md:mt-10 md:px-16'>
+          <h1 className='text-xl font-semibold md:text-3xl'>My Rewards</h1>
+          <div className='mt-3 grid w-full grid-cols-2 gap-3'>
+            <div className='flex min-h-[150px] w-[100%] animate-pulse flex-col gap-2  rounded-lg bg-gray-300 px-3 py-5' />
+            <div className='flex flex min-h-[150px] w-[100%] animate-pulse flex-col gap-2  rounded-lg bg-gray-300 px-3 py-5' />
+          </div>
+        </div>
+      ) : (
+        <RewardSection
+          coupons={coupons}
+          fetchData={fetchUserCoupons}
+          userId={user?.id}
+        />
+      )}
     </div>
   );
 };

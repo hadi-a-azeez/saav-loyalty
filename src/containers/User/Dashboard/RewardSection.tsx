@@ -1,13 +1,14 @@
-import { supabase } from '@/lib/supabaseClient';
 import {
   Drawer,
   DrawerBody,
-  DrawerOverlay,
-  DrawerContent,
   DrawerCloseButton,
+  DrawerContent,
+  DrawerOverlay,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
+
+import { supabase } from '@/lib/supabaseClient';
 
 interface BoxProps {
   coupon: string;
@@ -16,11 +17,12 @@ interface BoxProps {
   status: string;
 }
 
-const RewardSection = ({ coupons = [], fetchData = () => {} }: any) => {
+const RewardSection = ({ coupons = [], fetchData, userId = '' }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState({
     heading: '',
     value: '',
+    status: '',
   });
   const [confetti, setConfetti] = useState(false);
   //get the screen width and height after window load
@@ -38,7 +40,6 @@ const RewardSection = ({ coupons = [], fetchData = () => {} }: any) => {
       .from('kardano-coupons')
       .update({ status: 'USED' })
       .eq('id', id);
-    fetchData();
   };
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const RewardSection = ({ coupons = [], fetchData = () => {} }: any) => {
         onClose={() => {
           setConfetti(false);
           setIsOpen(false);
+          selectedReward?.status === 'ACTIVE' && fetchData(userId);
         }}
         //align content to the center of the screen
         placement='bottom'
@@ -91,25 +93,47 @@ const RewardSection = ({ coupons = [], fetchData = () => {} }: any) => {
       <>
         {status === 'USED' ? (
           <div
-            className='border-1 flex min-h-[150px] w-[100%] flex-col  gap-2 rounded-lg bg-white px-3 py-5'
+            className='border-1 flex min-h-[150px] w-[100%] flex-col gap-2  rounded-lg bg-white px-3 py-5 md:min-h-[200px] md:px-6 md:py-10'
+            style={{
+              //set backgroundimage src "/offer.png"
+              backgroundImage: `url('/kard.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
             onClick={() => {
-              setSelectedReward({ heading: coupon, value: coupon_description });
+              setSelectedReward({
+                heading: coupon,
+                value: coupon_description,
+                status: status,
+              });
               //confetti
               setConfetti(true);
               setIsOpen(true);
               updateStatus(id, status);
             }}
           >
-            <h1 className='text-xl font-bold text-gray-900'>{coupon}</h1>
-            <h1 className='text-lg font-normal text-gray-900 '>
+            <h1 className='text-xl font-bold text-gray-900 md:text-3xl'>
+              {coupon}
+            </h1>
+            <h1 className='text-lg font-normal text-gray-900 md:text-xl'>
               {coupon_description}
             </h1>
           </div>
         ) : (
           <div
-            className='flex min-h-[150px] w-[100%] flex-col gap-2  rounded-lg bg-blue-700 px-3 py-5'
+            className='flex min-h-[150px] w-[100%] flex-col gap-2  rounded-lg bg-blue-700 px-3 py-5 md:min-h-[200px] md:px-6 md:py-10'
+            style={{
+              //set backgroundimage src "/offer.png"
+              backgroundImage: `url('/offer.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
             onClick={() => {
-              setSelectedReward({ heading: coupon, value: coupon_description });
+              setSelectedReward({
+                heading: coupon,
+                value: coupon_description,
+                status: status,
+              });
               //confetti
               setConfetti(true);
               setIsOpen(true);
@@ -122,11 +146,11 @@ const RewardSection = ({ coupons = [], fetchData = () => {} }: any) => {
   };
 
   return (
-    <div className='mt-4 w-full px-3'>
-      <h1 className='text-xl font-semibold'>My Rewards</h1>
+    <div className='mt-4 w-full px-3 md:mt-10 md:px-16'>
+      <h1 className='text-xl font-semibold md:text-3xl'>My Rewards</h1>
       <div className='mt-3 grid w-full grid-cols-2 gap-3'>
         {coupons.map((coupon: any) => {
-          return <Box {...coupon} />;
+          return <Box key={coupon?.coupon} {...coupon} />;
         })}
         {/* <Box heading='Total Rewards' value={13} />
       <Box heading='Rewards Redeemed' value={5} /> */}
