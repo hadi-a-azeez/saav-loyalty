@@ -1,4 +1,5 @@
 import Header from '@/containers/User/Home/Header';
+import LinkSection from '@/containers/User/Home/Links';
 import RegisterSection from '@/containers/User/Home/RegisterSection';
 
 const HomeContainer = () => {
@@ -20,6 +21,7 @@ const HomeContainer = () => {
         {/* <RegisterSection /> */}
         <RegisterSection />
         {/* <GoogleReviewSection /> */}
+        <LinkSection />
       </div>
     </div>
   );
