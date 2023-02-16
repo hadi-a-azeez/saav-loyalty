@@ -22,6 +22,6 @@ export const coupons = [
   {
     campaign: 'REGISTRATION',
     coupon: '15% Off',
-    description: '15% off on above 8000 purchase',
+    description: '15% off on above 10000 purchase',
   },
 ];
